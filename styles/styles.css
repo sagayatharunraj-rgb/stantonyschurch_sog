@@ -1,0 +1,68 @@
+.container {
+    width: 80%;
+    margin: auto;
+    overflow: hidden;
+}
+
+header {
+    background: #35424a;
+    color: #ffffff;
+    padding: 20px 0;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.5em;
+}
+
+nav {
+    background: #e8491d;
+    color: #ffffff;
+    padding: 10px;
+    text-align: center;
+}
+
+nav a {
+    color: #ffffff;
+    padding: 14px 20px;
+    text-decoration: none;
+}
+
+nav a:hover {
+    background: #35424a;
+}
+
+footer {
+    background: #35424a;
+    color: #ffffff;
+    text-align: center;
+    padding: 10px 0;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+h1, h2, h3 {
+    color: #35424a;
+}
+
+p {
+    line-height: 1.6;
+}
+
+.btn {
+    display: inline-block;
+    font-size: 1.2em;
+    color: #ffffff;
+    background: #e8491d;
+    padding: 10px 20px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.btn:hover {
+    background: #35424a;
+}

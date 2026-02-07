@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>SOLDIERS OF GOD PORTAL</title>
+<style>
+body{font-family:Arial;margin:0;background:#f2f2f2;}
+header{background:#7b0000;color:white;padding:15px;text-align:center;}
+.container{padding:20px;}
+.card{background:white;padding:15px;border-radius:10px;margin-bottom:15px;}
+button{background:#7b0000;color:white;border:none;padding:8px;border-radius:5px;margin:2px;}
+input,textarea{width:100%;padding:8px;margin:5px 0;}
+.hidden{display:none;}
+nav button{margin:3px;}
+</style>
+</head>
+
+<body>
+<header>
+<h2>ST. ANTONY'S CHURCH – SM NAGAR – VYASARPADI</h2>
+<h1>SOLDIERS OF GOD PORTAL</h1>
+</header>
+
+<div class="container">
+
+<!-- LOGIN -->
+<div id="loginPage" class="card">
+<h3>Login</h3>
+<input id="loginName" placeholder="Name">
+<input id="loginID" placeholder="Member ID">
+<button onclick="login()">Enter Portal</button>
+</div>
+
+<!-- NAVIGATION -->
+<div id="nav" class="hidden">
+<nav>
+<button onclick="show('home')">Home</button>
+<button onclick="show('members')">Members</button>
+<button onclick="show('attendance')">Attendance</button>
+<button onclick="show('activities')">Activities</button>
+<button onclick="show('events')">Events</button>
+<button onclick="show('calendar')">Calendar</button>
+<button onclick="show('contact')">Contacts</button>
+<button onclick="show('feedback')">Feedback</button>
+<button onclick="logout()">Logout</button>
+</nav>
+</div>
+
+<div id="home" class="card hidden"></div>
+<div id="members" class="card hidden"></div>
+<div id="attendance" class="card hidden"></div>
+<div id="activities" class="card hidden"></div>
+<div id="events" class="card hidden"></div>
+<div id="calendar" class="card hidden"></div>
+<div id="contact" class="card hidden"></div>
+<div id="feedback" class="card hidden"></div>
+
+</div>
+
+<script>
+const admins=["SOG027","SOG004","SOG016","SOG013","SOG024"];
+
+const memberList=[
+["SOG001","Aathil Mathew"],["SOG002","Abale"],["SOG003","Abigail"],
+["SOG004","Angeline"],["SOG005","Alphonsa Mary"],["SOG006","Anika Angel"],
+["SOG007","Arvin Bose"],["SOG008","Ashwin Moses"],["SOG009","Christantony"],
+["SOG010","Daniel Lawrence"],["SOG011","Daphney"],["SOG012","Derrick"],
+["SOG013","Delcy Mary"],["SOG014","Evangeline"],["SOG015","Imman Michael"],
+["SOG016","Jooyal"],["SOG017","Jerry Anthony"],["SOG018","Kaitlyn"],
+["SOG019","Mariyan"],["SOG020","Prisith Valan"],["SOG021","Prince"],
+["SOG022","Roshini"],["SOG023","Roysten Luke"],["SOG024","Ridinga"],
+["SOG025","Sara"],["SOG026","Saron Thanga Raj"],["SOG027","Sagaya Tharun Raj"],
+["SOG028","Sherly Mariya"],["SOG029","Sham Denny"],["SOG030","Tharun M"]
+];
+
+let currentID="";
+let isAdmin=false;
+
+// LOGIN
+function login(){
+let n=loginName.value.trim().toLowerCase();
+let i=loginID.value.trim();
+let f=memberList.find(m=>m[0]==i && m[1].toLowerCase()==n);
+if(!f){alert("Invalid Login");return;}
+currentID=i;
+isAdmin=admins.includes(i);
+loginPage.style.display="none";
+nav.classList.remove("hidden");
+loadAll();
+show('home');
+}
+function logout(){location.reload();}
+
+// PAGE SWITCH
+function show(id){
+["home","members","attendance","activities","events","calendar","contact","feedback"]
+.forEach(x=>document.getElementById(x).classList.add("hidden"));
+document.getElementById(id).classList.remove("hidden");
+}
+
+// LOAD ALL
+function loadAll(){
+loadHome();loadMembers();loadAttendance();
+loadActivities();loadEvents();loadCalendar();
+loadContact();loadFeedback();
+}
+
+// HOME PAGE
+function loadHome(){
+home.innerHTML=`
+<h1>SOLDIERS OF GOD</h1>
+<h3>TOGETHER IN THE HEART OF CHRIST</h3>
+<p>We are the Soldiers of God. One Heart, One Mission, One in Christ.</p>
+
+<h3>Branches</h3>
+<ul>
+<li>Altar Server</li>
+<li>Liturgy Animation</li>
+<li>Media Works</li>
+<li>Children's Choir</li>
+</ul>
+
+<h3>President – Sagaya Tharun Raj</h3>
+<h3>Vice President – Angeline</h3>
+<h3>Secretary – Jooyal</h3>
+<h3>Treasurer – Delcy Mary</h3>
+`;
+}
+
+// MEMBERS
+function loadMembers(){
+let h="<h3>Members</h3>";
+memberList.forEach(m=>h+=m[0]+" - "+m[1]+"<br>");
+members.innerHTML=h;
+}
+
+// ATTENDANCE
+function loadAttendance(){
+let d=JSON.parse(localStorage.att||"{}");
+let h="<h3>Attendance</h3>";
+let abs=[];
+memberList.forEach(m=>{
+let r=d[m[0]]||{p:0,t:0};
+let per=r.t?((r.p/r.t)*100).toFixed(1):0;
+if(isAdmin){
+h+=`${m[1]} <button onclick="mark('${m[0]}',1)">P</button>
+<button onclick="mark('${m[0]}',0)">A</button> ${per}%<br>`;
+}
+if(r.t && r.p<r.t) abs.push(m[1]);
+});
+h+="<h4>Absentees:</h4>"+abs.join(", ");
+attendance.innerHTML=h;
+}
+function mark(id,val){
+let d=JSON.parse(localStorage.att||"{}");
+if(!d[id]) d[id]={p:0,t:0};
+d[id].t++; if(val)d[id].p++;
+localStorage.att=JSON.stringify(d);
+loadAttendance();
+}
+
+// ACTIVITIES
+function loadActivities(){
+let a=JSON.parse(localStorage.act||"[]");
+let h="<h3>Activities</h3>";
+if(isAdmin)h+=`<input id='actTxt'><button onclick='addAct()'>Add</button>`;
+a.forEach(x=>h+="<p>"+x+"</p>");
+activities.innerHTML=h;
+}
+function addAct(){
+let a=JSON.parse(localStorage.act||"[]");
+a.push(actTxt.value); localStorage.act=JSON.stringify(a); loadActivities();
+}
+
+// EVENTS
+function loadEvents(){
+let e=JSON.parse(localStorage.ev||"[]");
+let h="<h3>Events</h3>";
+if(isAdmin)h+=`<input id='evTxt'><button onclick='addEv()'>Add</button>`;
+e.forEach(x=>h+="<p>"+x+"</p>");
+events.innerHTML=h;
+}
+function addEv(){
+let e=JSON.parse(localStorage.ev||"[]");
+e.push(evTxt.value); localStorage.ev=JSON.stringify(e); loadEvents();
+}
+
+// CALENDAR
+function loadCalendar(){
+let c=JSON.parse(localStorage.cal||"[]");
+let h="<h3>Calendar</h3>";
+if(isAdmin)h+=`<input id='calTxt'><button onclick='addCal()'>Add</button>`;
+c.forEach(x=>h+="<p>"+x+"</p>");
+calendar.innerHTML=h;
+}
+function addCal(){
+let c=JSON.parse(localStorage.cal||"[]");
+c.push(calTxt.value); localStorage.cal=JSON.stringify(c); loadCalendar();
+}
+
+// CONTACT
+function loadContact(){
+let c=JSON.parse(localStorage.con||"[]");
+let h="<h3>Contact Directory</h3>";
+if(isAdmin)h+=`<input id='conTxt'><button onclick='addCon()'>Add</button>`;
+c.forEach(x=>h+="<p>"+x+"</p>");
+contact.innerHTML=h;
+}
+function addCon(){
+let c=JSON.parse(localStorage.con||"[]");
+c.push(conTxt.value); localStorage.con=JSON.stringify(c); loadContact();
+}
+
+// FEEDBACK
+function loadFeedback(){
+let f=JSON.parse(localStorage.fb||"[]");
+let h="<h3>Feedback</h3>
+<textarea id='fbTxt'></textarea>
+<button onclick='saveFb()'>Submit</button>";
+f.forEach(x=>h+="<p>"+x+"</p>");
+feedback.innerHTML=h;
+}
+function saveFb(){
+let f=JSON.parse(localStorage.fb||"[]");
+f.push(fbTxt.value); localStorage.fb=JSON.stringify(f); loadFeedback();
+}
+</script>
+
+</body>
+</html>
